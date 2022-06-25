@@ -1,5 +1,7 @@
 package main
 
+// TODO: Seperate into different packages
+
 type Field struct {
 	Order int64
 }
@@ -42,15 +44,65 @@ func (field *Field) MultiplicativeInverse(b int64) int64 {
 	if a < b {
 		a, b = b, a
 	}
-	sa := [...]int64{1, 0}
+	// sa := [...]int64{1, 0}
 	ta := [...]int64{0, 1}
 	for b != 0 {
 		q := a / b
 		a, b = b, a%b
-		sa[0], sa[1] = sa[1], sa[0]-q*sa[1]
+		// sa[0], sa[1] = sa[1], sa[0]-q*sa[1]
 		ta[0], ta[1] = ta[1], ta[0]-q*ta[1]
 	}
 	return ta[0]
+}
+
+type Polynomial struct {
+	Field        *Field
+	Coefficients []int64
+}
+
+func NewPolynomial(coefficients []int64, field *Field) *Polynomial {
+	return &Polynomial{
+		Field:        field,
+		Coefficients: coefficients,
+	}
+}
+
+func (poly *Polynomial) Degree() int {
+	return len(poly.Coefficients) - 1
+}
+
+func (poly *Polynomial) EvaluatePowers(powers []int64) int64 {
+	if len(powers) != len(poly.Coefficients) {
+		// TODO: get rid of panic, implement proper error handling
+		panic("powers should be the same size as co-efficients")
+	}
+
+	result := int64(0)
+	for i := range poly.Coefficients {
+		poly.Field.Add(
+			result,
+			poly.Field.Mul(poly.Coefficients[i], powers[i]),
+		)
+	}
+	return result
+}
+
+// TODO: Look into extracting the homorphic element into a separate package
+// that implements the same arithmetic interface
+func (poly *Polynomial) EvaluateEncryptedPowers(powers []int64) int64 {
+	if len(powers) != len(poly.Coefficients) {
+		// TODO: get rid of panic, implement proper error handling
+		panic("powers should be the same size as co-efficients")
+	}
+
+	result := int64(1)
+	for i := range poly.Coefficients {
+		poly.Field.Mul(
+			result,
+			poly.Field.Exp(powers[i], poly.Coefficients[i]),
+		)
+	}
+	return result
 }
 
 func main() {
