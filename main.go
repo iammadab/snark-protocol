@@ -26,6 +26,16 @@ func (field *Field) Div(a, b int64) int64 {
 	return (a * field.MultiplicativeInverse(b)) % field.Order
 }
 
+func (field *Field) Exp(a, pow int64) int64 {
+	// using repeated multiplication, more space efficient
+	// TODO: is there something better
+	result := int64(1)
+	for i := int64(0); i < pow; i++ {
+		result = (result * a) % field.Order
+	}
+	return result
+}
+
 // TODO: make the logic here clearer
 func (field *Field) MultiplicativeInverse(b int64) int64 {
 	a := field.Order
@@ -45,5 +55,5 @@ func (field *Field) MultiplicativeInverse(b int64) int64 {
 
 func main() {
 	a := NewField(7)
-	println(a.Div(2, 9))
+	println(a.Exp(2, 3))
 }
