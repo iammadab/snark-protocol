@@ -22,11 +22,12 @@ func (poly *Polynomial) Degree() int {
 	return len(poly.Coefficients) - 1
 }
 
+// TODO: make this section clearer
 func (poly *Polynomial) EvaluateAt(point int64) int64 {
 	degree := poly.Degree()
 	powers := []int64{1} // inserting 1 for constant value
 	for i := 0; i < degree; i++ {
-		powers = append(powers, poly.Field.Exp(point, int64(i)))
+		powers = append(powers, poly.Field.Exp(point, int64(i+1)))
 	}
 	return poly.EvaluatePowers(powers)
 }
