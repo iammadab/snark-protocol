@@ -7,7 +7,7 @@ type Polynomial struct {
 	Coefficients []int64
 }
 
-func NewPolynomial(coefficients []int64, field *field.Field) *Polynomial {
+func NewPolynomial(field *field.Field, coefficients []int64) *Polynomial {
 	return &Polynomial{
 		Field:        field,
 		Coefficients: coefficients,
@@ -16,6 +16,15 @@ func NewPolynomial(coefficients []int64, field *field.Field) *Polynomial {
 
 func (poly *Polynomial) Degree() int {
 	return len(poly.Coefficients) - 1
+}
+
+func (poly *Polynomial) EvaluateAt(point int64) int64 {
+	degree := poly.Degree()
+	powers := make([]int64, degree)
+	for i := 0; i < degree; i++ {
+		powers = append(powers, poly.Field.Exp(point, int64(i)))
+	}
+	return poly.EvaluatePowers(powers)
 }
 
 func (poly *Polynomial) EvaluatePowers(powers []int64) int64 {
