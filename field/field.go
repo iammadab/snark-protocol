@@ -23,6 +23,8 @@ func (field *Field) Mod(val int64) int64 {
 	return element
 }
 
+// TODO: maybe also perform modular operation on input before computation
+
 func (field *Field) Add(a, b int64) int64 {
 	return field.Mod(a + b)
 }
