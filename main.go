@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/iammadab/snark-protocol/field"
 	"github.com/iammadab/snark-protocol/polynomial"
 )
@@ -33,5 +31,5 @@ func main() {
 	// println(a.Exp(2, 3))
 	b := NewVerifier(a, []int64{5, 2})
 	b.Setup()
-	fmt.Printf("%+v", b)
+	// fmt.Printf("%+v", b)
 }

@@ -37,13 +37,19 @@ func (field *Field) Mul(a, b int64) int64 {
 	return field.Mod(a * b)
 }
 
-func (field *Field) Div(a, b int64) int64 {
-	return field.Mod(a * field.MultiplicativeInverse(b))
-}
+// TODO: re-enable
+// func (field *Field) Div(a, b int64) int64 {
+// 	return field.Mod(a * field.MultiplicativeInverse(b))
+// }
 
 func (field *Field) Exp(a, pow int64) int64 {
 	// using repeated multiplication, more space efficient
 	// TODO: is there something better
+	if pow < 0 {
+		a = field.MultiplicativeInverse(a)
+		pow *= -1
+	}
+
 	result := int64(1)
 	for i := int64(0); i < pow; i++ {
 		result = field.Mod(result * a)
@@ -51,7 +57,9 @@ func (field *Field) Exp(a, pow int64) int64 {
 	return result
 }
 
-// TODO: make the logic here clearer
+// TODO: make this logic here clearer
+// also, multiplicative inverses might not exist depending on the field
+// return an error in such case
 func (field *Field) MultiplicativeInverse(b int64) int64 {
 	a := field.Order
 	if a < b {
@@ -65,6 +73,7 @@ func (field *Field) MultiplicativeInverse(b int64) int64 {
 		// sa[0], sa[1] = sa[1], sa[0]-q*sa[1]
 		ta[0], ta[1] = ta[1], ta[0]-q*ta[1]
 	}
+	println(ta[0])
 	return ta[0]
 }
 
