@@ -1,6 +1,10 @@
+// TODO: add documentation
+// all evaluations happen in mod space
 package polynomial
 
-import "github.com/iammadab/snark-protocol/field"
+import (
+	"github.com/iammadab/snark-protocol/field"
+)
 
 type Polynomial struct {
 	Field        *field.Field
@@ -20,7 +24,7 @@ func (poly *Polynomial) Degree() int {
 
 func (poly *Polynomial) EvaluateAt(point int64) int64 {
 	degree := poly.Degree()
-	powers := make([]int64, degree)
+	powers := []int64{1} // inserting 1 for constant value
 	for i := 0; i < degree; i++ {
 		powers = append(powers, poly.Field.Exp(point, int64(i)))
 	}
@@ -35,11 +39,12 @@ func (poly *Polynomial) EvaluatePowers(powers []int64) int64 {
 
 	result := int64(0)
 	for i := range poly.Coefficients {
-		poly.Field.Add(
+		result = poly.Field.Add(
 			result,
 			poly.Field.Mul(poly.Coefficients[i], powers[i]),
 		)
 	}
+	println(result)
 	return result
 }
 
@@ -53,7 +58,7 @@ func (poly *Polynomial) EvaluateEncryptedPowers(powers []int64) int64 {
 
 	result := int64(1)
 	for i := range poly.Coefficients {
-		poly.Field.Mul(
+		result = poly.Field.Mul(
 			result,
 			poly.Field.Exp(powers[i], poly.Coefficients[i]),
 		)

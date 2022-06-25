@@ -1,5 +1,10 @@
 package field
 
+import (
+	"math/rand"
+	"time"
+)
+
 type Field struct {
 	Order int64
 }
@@ -10,20 +15,28 @@ func NewField(order int64) *Field {
 	}
 }
 
+func (field *Field) Mod(val int64) int64 {
+	element := val % field.Order
+	if element < 0 {
+		return element + field.Order
+	}
+	return element
+}
+
 func (field *Field) Add(a, b int64) int64 {
-	return (a + b) % field.Order
+	return field.Mod(a + b)
 }
 
 func (field *Field) Sub(a, b int64) int64 {
-	return (a - b) % field.Order
+	return field.Mod(a - b)
 }
 
 func (field *Field) Mul(a, b int64) int64 {
-	return (a * b) % field.Order
+	return field.Mod(a * b)
 }
 
 func (field *Field) Div(a, b int64) int64 {
-	return (a * field.MultiplicativeInverse(b)) % field.Order
+	return field.Mod(a * field.MultiplicativeInverse(b))
 }
 
 func (field *Field) Exp(a, pow int64) int64 {
@@ -31,7 +44,7 @@ func (field *Field) Exp(a, pow int64) int64 {
 	// TODO: is there something better
 	result := int64(1)
 	for i := int64(0); i < pow; i++ {
-		result = (result * a) % field.Order
+		result = field.Mod(result * a)
 	}
 	return result
 }
@@ -51,4 +64,9 @@ func (field *Field) MultiplicativeInverse(b int64) int64 {
 		ta[0], ta[1] = ta[1], ta[0]-q*ta[1]
 	}
 	return ta[0]
+}
+
+func (field *Field) RandomElement() int64 {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Int63n(field.Order)
 }
