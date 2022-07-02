@@ -35,6 +35,7 @@ func (verifier *Verifier) Setup() []int64 {
 		encryptedPowers = append(encryptedPowers, verifier.EncryptValue(power))
 	}
 
+	fmt.Println("encrypted powers of x")
 	fmt.Printf("%v", encryptedPowers)
 	return encryptedPowers
 }
@@ -65,20 +66,25 @@ func NewProver(field *field.Field, polyp []int64, polyh []int64) *Prover {
 }
 
 func main() {
-	a := field.NewField(7)
+	field := field.NewField(7)
 
 	// need a more intiutive way to set the co-efficients
 	// p(x) = x^3 - 3x^2 + 2x [0, 2, -3, 1]
 	// h(x) = x^2 - 2x [0, -2, 1, 0]
 	// t(x) = x - 1 [-1, 1, 0, 0]
-	b := NewVerifier(a, 5, []int64{-1, 1, 0, 0})
-	r := b.Setup()
-	fmt.Println(r)
-	// fmt.Printf("%+v", b)
-	m := NewProver(a, []int64{0, 2, -3, 1}, []int64{0, -2, 1, 0})
-	fmt.Println(m)
-	fmt.Println(m.Prove(r))
-	println(b.Verify(m.Prove(r)))
+
+	t_of_x := []int64{-1, 1, 0, 0}
+	h_of_x := []int64{0, -2, 1, 0}
+	p_of_x := []int64{0, 2, -3, 1}
+
+	verifier := NewVerifier(field, 5, t_of_x)
+
+	encrypted_powers_of_x := verifier.Setup()
+
+	prover := NewProver(field, p_of_x, h_of_x)
+	fmt.Println(prover)
+	fmt.Println(prover.Prove(encrypted_powers_of_x))
+	println(verifier.Verify(prover.Prove(encrypted_powers_of_x)))
 }
 
 // Helper function to perfom integer exponentiation in golang
