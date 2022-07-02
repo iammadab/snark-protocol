@@ -26,15 +26,15 @@ func (field *Field) Mod(val int64) int64 {
 // TODO: maybe also perform modular operation on input before computation
 
 func (field *Field) Add(a, b int64) int64 {
-	return field.Mod(a + b)
+	return field.Mod(field.Mod(a) + field.Mod(b))
 }
 
 func (field *Field) Sub(a, b int64) int64 {
-	return field.Mod(a - b)
+	return field.Mod(field.Mod(a) - field.Mod(b))
 }
 
 func (field *Field) Mul(a, b int64) int64 {
-	return field.Mod(a * b)
+	return field.Mod(field.Mod(a) * field.Mod(b))
 }
 
 // TODO: re-enable
@@ -73,7 +73,6 @@ func (field *Field) MultiplicativeInverse(b int64) int64 {
 		// sa[0], sa[1] = sa[1], sa[0]-q*sa[1]
 		ta[0], ta[1] = ta[1], ta[0]-q*ta[1]
 	}
-	println(ta[0])
 	return ta[0]
 }
 

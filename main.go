@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/iammadab/snark-protocol/field"
 	"github.com/iammadab/snark-protocol/polynomial"
@@ -24,14 +25,17 @@ func NewVerifier(field *field.Field, generator int64, coefficients []int64) *Ver
 	}
 }
 
-// performs the unencrypted evaluation of t
-// and returns the encrypted powers of s based on the degree of the polynomial
 func (verifier *Verifier) Setup() []int64 {
+	// evaluate the t(x) with unencrypted value of x
 	verifier.EvalT = verifier.PolyT.EvaluateAt(verifier.EvalPoint)
-	encryptedPowers := []int64{1}
-	for i := 0; i < verifier.PolyT.Degree(); i++ {
-		encryptedPowers = append(encryptedPowers, verifier.EncryptValue(verifier.EvalPoint))
+
+	encryptedPowers := []int64{}
+	for i := 0; i <= verifier.PolyT.Degree(); i++ {
+		power := IntPow(verifier.EvalPoint, int64(i))
+		encryptedPowers = append(encryptedPowers, verifier.EncryptValue(power))
 	}
+
+	fmt.Printf("%v", encryptedPowers)
 	return encryptedPowers
 }
 
@@ -62,14 +66,22 @@ func NewProver(field *field.Field, polyp []int64, polyh []int64) *Prover {
 
 func main() {
 	a := field.NewField(7)
-	// println(a.Exp(2, 3))
-	// 2x + 5
-	b := NewVerifier(a, 5, []int64{5, 2})
+
+	// need a more intiutive way to set the co-efficients
+	// p(x) = x^3 - 3x^2 + 2x [0, 2, -3, 1]
+	// h(x) = x^2 - 2x [0, -2, 1, 0]
+	// t(x) = x - 1 [-1, 1, 0, 0]
+	b := NewVerifier(a, 5, []int64{-1, 1, 0, 0})
 	r := b.Setup()
 	fmt.Println(r)
 	// fmt.Printf("%+v", b)
-	m := NewProver(a, []int64{1, 5}, []int64{5, 3})
+	m := NewProver(a, []int64{0, 2, -3, 1}, []int64{0, -2, 1, 0})
 	fmt.Println(m)
 	fmt.Println(m.Prove(r))
 	println(b.Verify(m.Prove(r)))
+}
+
+// Helper function to perfom integer exponentiation in golang
+func IntPow(a, b int64) int64 {
+	return int64(math.Pow(float64(a), float64(b)))
 }

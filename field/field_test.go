@@ -27,7 +27,7 @@ var multiplicationTests = []OperationTest{
 }
 
 // var divisionTests = []OperationTest{
-// 	// {a, b, c} checks that a * b = c in the field
+// 	// {a, b, c} checks that a / b = c in the field
 // 	{35, 5, 0},
 // 	{5, 36, 6},
 // 	// {-46, 89, 1},
