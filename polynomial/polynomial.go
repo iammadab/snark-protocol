@@ -43,7 +43,7 @@ func (poly *Polynomial) EvaluatePowers(powers []int64) int64 {
 			poly.Field.Mul(poly.Coefficients[i], powers[i]),
 		)
 	}
-	println(result)
+	//println(result)
 	return result
 }
 

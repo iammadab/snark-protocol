@@ -39,17 +39,21 @@ func TestProtocol(t *testing.T) {
 	field := field.NewField(7919)
 	generator := 5
 
-	for i, test := range testCases {
-		verifier := NewVerifier(field, int64(generator), test.t_of_x)
+	ITERATION_COUNT := 1000
 
-		encrypted_powers_of_x := verifier.Setup()
+	for j := 0; j < ITERATION_COUNT; j++ {
+		for i, test := range testCases {
+			verifier := NewVerifier(field, int64(generator), test.t_of_x)
 
-		prover := NewProver(field, test.p_of_x, test.h_of_x)
-		p, h := prover.Prove(encrypted_powers_of_x)
-		proofs_validity := verifier.Verify(p, h)
+			encrypted_powers_of_x := verifier.Setup()
 
-		if proofs_validity != test.is_valid {
-			t.Errorf("Test: %d, expected verifier to say %t, instead got %t", i, test.is_valid, proofs_validity)
+			prover := NewProver(field, test.p_of_x, test.h_of_x)
+			p, h := prover.Prove(encrypted_powers_of_x)
+			proofs_validity := verifier.Verify(p, h)
+
+			if proofs_validity != test.is_valid {
+				t.Errorf("Test: %d, expected verifier to say %t, instead got %t", i, test.is_valid, proofs_validity)
+			}
 		}
 	}
 }
