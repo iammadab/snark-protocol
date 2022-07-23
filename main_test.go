@@ -36,7 +36,8 @@ var testCases = []TestCase{
 }
 
 func TestProtocol(t *testing.T) {
-	field := field.NewField(7)
+	field := field.NewField(101)
+	// field := field.NewField(13)
 	generator := 5
 
 	for i, test := range testCases {

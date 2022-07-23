@@ -39,9 +39,4 @@ func TestPolynomialEvaluationAtAPoint(t *testing.T) {
 		}
 
 	}
-
-	// polynomial := NewPolynomial(f, []int64{0, 1})
-	// if polynomial.EvaluateAt(1) != 1 {
-	// 	t.Errorf("evaluation failed")
-	// }
 }
