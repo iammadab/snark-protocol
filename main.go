@@ -22,7 +22,7 @@ func NewVerifier(field *field.Field, generator int64, coefficients []int64) *Ver
 		PolyT:     *polynomial.NewPolynomial(field, coefficients),
 		Field:     field,
 		EvalPoint: field.RandomElement(),
-		// EvalPoint: 8,
+		//EvalPoint: 8,
 	}
 }
 

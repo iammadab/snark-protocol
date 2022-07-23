@@ -50,10 +50,26 @@ func (field *Field) Exp(a, pow int64) int64 {
 		pow *= -1
 	}
 
-	result := int64(1)
-	for i := int64(0); i < pow; i++ {
-		result = field.Mod(result * a)
+	return field.FastExp(a, pow)
+
+}
+
+func (field *Field) FastExp(a, pow int64) int64 {
+	if pow == 0 {
+		return 1
 	}
+
+	if pow == 1 {
+		return field.Mod(a)
+	}
+
+	temp := field.FastExp(a, pow/2)
+	result := field.Mul(temp, temp)
+
+	if pow%2 == 1 {
+		result = field.Mul(result, a)
+	}
+
 	return result
 }
 
