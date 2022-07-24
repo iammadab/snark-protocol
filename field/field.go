@@ -23,8 +23,6 @@ func (field *Field) Mod(val int64) int64 {
 	return element
 }
 
-// TODO: maybe also perform modular operation on input before computation
-
 func (field *Field) Add(a, b int64) int64 {
 	return field.Mod(field.Mod(a) + field.Mod(b))
 }
@@ -37,14 +35,12 @@ func (field *Field) Mul(a, b int64) int64 {
 	return field.Mod(field.Mod(a) * field.Mod(b))
 }
 
-// TODO: re-enable
-// func (field *Field) Div(a, b int64) int64 {
-// 	return field.Mod(a * field.MultiplicativeInverse(b))
-// }
-
 func (field *Field) Exp(a, pow int64) int64 {
-	// using repeated multiplication, more space efficient
-	// TODO: is there something better
+	// convert negative exponent problem instances to their positive versions
+	// by finding the multiplicative inverse of the base, and converting the exponent
+	// to its positive version.
+	// a^-b => (a^-1)^b
+	// a^-1 is the multiplicative inverse of a.
 	if pow < 0 {
 		a = field.MultiplicativeInverse(a)
 		pow *= -1
@@ -54,20 +50,22 @@ func (field *Field) Exp(a, pow int64) int64 {
 
 }
 
-func (field *Field) FastExp(a, pow int64) int64 {
+func (field *Field) FastExp(base, pow int64) int64 {
+	// base^0 = 1
 	if pow == 0 {
 		return 1
 	}
 
+	// base^1 = base
 	if pow == 1 {
-		return field.Mod(a)
+		return field.Mod(base)
 	}
 
-	temp := field.FastExp(a, pow/2)
+	temp := field.FastExp(base, pow/2)
 	result := field.Mul(temp, temp)
 
 	if pow%2 == 1 {
-		result = field.Mul(result, a)
+		result = field.Mul(result, base)
 	}
 
 	return result
@@ -81,12 +79,10 @@ func (field *Field) MultiplicativeInverse(b int64) int64 {
 	if a < b {
 		a, b = b, a
 	}
-	// sa := [...]int64{1, 0}
 	ta := [...]int64{0, 1}
 	for b != 0 {
 		q := a / b
 		a, b = b, a%b
-		// sa[0], sa[1] = sa[1], sa[0]-q*sa[1]
 		ta[0], ta[1] = ta[1], ta[0]-q*ta[1]
 	}
 	return ta[0]
