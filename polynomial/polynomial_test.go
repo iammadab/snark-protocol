@@ -37,6 +37,5 @@ func TestPolynomialEvaluationAtAPoint(t *testing.T) {
 		if result := test.poly.EvaluateAt(test.point); result != test.expected {
 			t.Errorf("Evaluattion of %+v at %d mod %d = %d, expected %d", test.poly.Coefficients, test.point, test.poly.Field.Order, result, test.expected)
 		}
-
 	}
 }
