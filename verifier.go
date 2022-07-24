@@ -6,8 +6,11 @@ import (
 	"math"
 )
 
+// TODO: need the concept of public information and private information
+// 		generator, field, polyT should all be public
+
 type Verifier struct {
-	Generator int64 // both prover and verifier should have this
+	Generator int64
 	PolyT     polynomial.Polynomial
 	Field     *field.Field
 	EvalPoint int64
@@ -23,10 +26,12 @@ func NewVerifier(field *field.Field, generator int64, coefficients []int64) *Ver
 	}
 }
 
+// Setup allows the verifier to get the unencrypted evaluation of t_of_x
+// and also generate the encrypted powers of s for the prover
 func (verifier *Verifier) Setup() []int64 {
 	verifier.EvalT = verifier.PolyT.EvaluateAt(verifier.EvalPoint)
 
-	encryptedPowers := []int64{}
+	var encryptedPowers []int64
 	for i := 0; i <= verifier.PolyT.Degree(); i++ {
 		power := IntPow(verifier.EvalPoint, int64(i))
 		encryptedPowers = append(encryptedPowers, verifier.EncryptValue(power))
@@ -35,8 +40,13 @@ func (verifier *Verifier) Setup() []int64 {
 	return encryptedPowers
 }
 
+// Verify checks that p = ht in encrypted space
+// E(p) = E(h)^t
 func (verifier *Verifier) Verify(encryptedP, encryptedH int64) bool {
-	return verifier.Field.Mod(encryptedP) == verifier.Field.Mod(verifier.Field.Exp(encryptedH, verifier.EvalT))
+	p := verifier.Field.Mod(encryptedP)
+	ht := verifier.Field.Mod(verifier.Field.Exp(encryptedH, verifier.EvalT))
+
+	return p == ht
 }
 
 func (verifier *Verifier) EncryptValue(val int64) int64 {

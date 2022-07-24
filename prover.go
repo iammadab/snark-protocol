@@ -10,13 +10,15 @@ type Prover struct {
 	PolyH polynomial.Polynomial
 }
 
-func (prover *Prover) Prove(powers []int64) (int64, int64) {
-	return prover.PolyP.EvaluateEncryptedPowers(powers), prover.PolyH.EvaluateEncryptedPowers(powers)
-}
-
 func NewProver(field *field.Field, polyp []int64, polyh []int64) *Prover {
 	return &Prover{
 		PolyP: *polynomial.NewPolynomial(field, polyp),
 		PolyH: *polynomial.NewPolynomial(field, polyh),
 	}
+}
+
+func (prover *Prover) Prove(powers []int64) (int64, int64) {
+	encryptedEvaluationOfP := prover.PolyP.EvaluateEncryptedPowers(powers)
+	encryptedEvaluationOfH := prover.PolyH.EvaluateEncryptedPowers(powers)
+	return encryptedEvaluationOfP, encryptedEvaluationOfH
 }
