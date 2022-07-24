@@ -1,5 +1,3 @@
-// TODO: add documentation
-// all evaluations happen in mod space
 package polynomial
 
 import (
@@ -30,6 +28,7 @@ func (poly *Polynomial) EvaluateAt(point int64) int64 {
 	return poly.EvaluatePowers(powers)
 }
 
+// EvaluatePowers evaluates a polynomial given the powers of x i.e [1, x^1, x^2, ..., x^n]
 func (poly *Polynomial) EvaluatePowers(powers []int64) int64 {
 	if len(powers) != len(poly.Coefficients) {
 		// TODO: get rid of panic, implement proper error handling
@@ -43,12 +42,13 @@ func (poly *Polynomial) EvaluatePowers(powers []int64) int64 {
 			poly.Field.Mul(poly.Coefficients[i], powers[i]),
 		)
 	}
-	//println(result)
 	return result
 }
 
-// TODO: Look into extracting the homorphic element into a separate package
-// that implements the same arithmetic interface
+// EvaluateEncryptedPowers does the same as EvaluatePowers but rather than doing addition (+)
+// it does multiplication (*) and rather than doing multiplication (*) it does exponentiation (^)
+// TODO: extract to homomorphic package, where addition and multiplication are implemented differently
+//		but interface if kept the same, that way we have a single evaluate powers function
 func (poly *Polynomial) EvaluateEncryptedPowers(powers []int64) int64 {
 	if len(powers) != len(poly.Coefficients) {
 		// TODO: get rid of panic, implement proper error handling

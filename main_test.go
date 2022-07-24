@@ -35,8 +35,12 @@ var testCases = []TestCase{
 	},
 }
 
+// TODO: Completeness property breaks when I use larger primes e.g. 210403
+
 func TestProtocol(t *testing.T) {
-	field := field.NewField(7919)
+	// parameters to the functions seems to have a big effect, how do we know what to pick
+	prime := int64(17707)
+	field := field.NewField(prime)
 	generator := 5
 
 	ITERATION_COUNT := 1000
