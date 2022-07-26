@@ -68,7 +68,7 @@ func TestBreakHE(t *testing.T) {
 	field := field.NewField(prime)
 	generator := 5
 
-	ITERATION_COUNT := 1000
+	ITERATION_COUNT := 100000
 
 	for j := 0; j < ITERATION_COUNT; j++ {
 		verifier := NewVerifier(field, int64(generator), testCases[0].t_of_x)
@@ -83,6 +83,12 @@ func TestBreakHE(t *testing.T) {
 
 		trickedVerifier := verifier.Verify(encryptedP, encryptedH)
 		if trickedVerifier != true {
+			// Print parameters
+			println("r", randomPoint)
+			println("g^r", encryptedH)
+			println("g^t", encryptedT)
+			println("g^t^r", encryptedP)
+			println("unencrypted t", PolyT.EvaluateAt(verifier.EvalT))
 			t.Errorf("Failed to convince the verifier of a false proof")
 		}
 	}
