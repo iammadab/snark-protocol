@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/iammadab/snark-protocol/polynomial"
 	"testing"
 
 	"github.com/iammadab/snark-protocol/field"
@@ -58,6 +59,31 @@ func TestProtocol(t *testing.T) {
 			if proofs_validity != test.is_valid {
 				t.Errorf("Test: %d, expected verifier to say %t, instead got %t", i, test.is_valid, proofs_validity)
 			}
+		}
+	}
+}
+
+func TestBreakHE(t *testing.T) {
+	prime := int64(17707)
+	field := field.NewField(prime)
+	generator := 5
+
+	ITERATION_COUNT := 1000
+
+	for j := 0; j < ITERATION_COUNT; j++ {
+		verifier := NewVerifier(field, int64(generator), testCases[0].t_of_x)
+		encryptedPowersOfX := verifier.Setup()
+
+		// Generate fake proof that fools the verifier with 100% probability
+		randomPoint := field.RandomElement()
+		encryptedH := EncryptValue(randomPoint, int64(generator), field)
+		PolyT := polynomial.NewPolynomial(field, testCases[0].t_of_x)
+		encryptedT := PolyT.EvaluateEncryptedPowers(encryptedPowersOfX)
+		encryptedP := field.Exp(encryptedT, randomPoint)
+
+		trickedVerifier := verifier.Verify(encryptedP, encryptedH)
+		if trickedVerifier != true {
+			t.Errorf("Failed to convince the verifier of a false proof")
 		}
 	}
 }
