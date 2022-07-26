@@ -1,6 +1,9 @@
 package main
 
-import "github.com/iammadab/snark-protocol/field"
+import (
+	"github.com/iammadab/snark-protocol/field"
+	"math"
+)
 
 func GenerateEncryptedPowers(point int64, degree int, generator int64, field *field.Field) []int64 {
 	var encryptedPowers []int64
@@ -10,4 +13,9 @@ func GenerateEncryptedPowers(point int64, degree int, generator int64, field *fi
 		encryptedPowers = append(encryptedPowers, encryptedValue)
 	}
 	return encryptedPowers
+}
+
+// IntPow performs integer exponentiation
+func IntPow(a, b int64) int64 {
+	return int64(math.Pow(float64(a), float64(b)))
 }
