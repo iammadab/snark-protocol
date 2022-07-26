@@ -30,14 +30,7 @@ func NewVerifier(field *field.Field, generator int64, coefficients []int64) *Ver
 // and also generate the encrypted powers of s for the prover
 func (verifier *Verifier) Setup() []int64 {
 	verifier.EvalT = verifier.PolyT.EvaluateAt(verifier.EvalPoint)
-
-	var encryptedPowers []int64
-	for i := 0; i <= verifier.PolyT.Degree(); i++ {
-		power := IntPow(verifier.EvalPoint, int64(i))
-		encryptedPowers = append(encryptedPowers, verifier.EncryptValue(power))
-	}
-
-	return encryptedPowers
+	return GenerateEncryptedPowers(verifier.EvalPoint, verifier.PolyT.Degree(), verifier.Generator, verifier.Field)
 }
 
 // Verify checks that p = ht in encrypted space
