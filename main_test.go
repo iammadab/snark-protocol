@@ -69,7 +69,7 @@ func TestBreakHE(t *testing.T) {
 	field := field.NewField(prime)
 	generator := 5
 
-	IterationCount := 1000000
+	IterationCount := 1000
 
 	for j := 0; j < IterationCount; j++ {
 		verifier := NewVerifier(field, int64(generator), testCases[0].tOfX)
