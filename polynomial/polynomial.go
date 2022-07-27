@@ -47,8 +47,6 @@ func (poly *Polynomial) EvaluatePowers(powers []int64) int64 {
 
 // EvaluateEncryptedPowers does the same as EvaluatePowers but rather than doing addition (+)
 // it does multiplication (*) and rather than doing multiplication (*) it does exponentiation (^)
-// TODO: extract to homomorphic package, where addition and multiplication are implemented differently
-//		but interface if kept the same, that way we have a single evaluate powers function
 func (poly *Polynomial) EvaluateEncryptedPowers(powers []int64) int64 {
 	if len(powers) != len(poly.Coefficients) {
 		// TODO: get rid of panic, implement proper error handling
