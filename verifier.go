@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/iammadab/snark-protocol/field"
 	"github.com/iammadab/snark-protocol/polynomial"
-	"math"
 )
 
 // TODO: need the concept of public information and private information
@@ -30,14 +29,7 @@ func NewVerifier(field *field.Field, generator int64, coefficients []int64) *Ver
 // and also generate the encrypted powers of s for the prover
 func (verifier *Verifier) Setup() []int64 {
 	verifier.EvalT = verifier.PolyT.EvaluateAt(verifier.EvalPoint)
-
-	var encryptedPowers []int64
-	for i := 0; i <= verifier.PolyT.Degree(); i++ {
-		power := IntPow(verifier.EvalPoint, int64(i))
-		encryptedPowers = append(encryptedPowers, verifier.EncryptValue(power))
-	}
-
-	return encryptedPowers
+	return GenerateEncryptedPowers(verifier.EvalPoint, verifier.PolyT.Degree(), verifier.Generator, verifier.Field)
 }
 
 // Verify checks that p = ht in encrypted space
@@ -47,13 +39,4 @@ func (verifier *Verifier) Verify(encryptedP, encryptedH int64) bool {
 	ht := verifier.Field.Mod(verifier.Field.Exp(encryptedH, verifier.EvalT))
 
 	return p == ht
-}
-
-func (verifier *Verifier) EncryptValue(val int64) int64 {
-	return verifier.Field.Exp(verifier.Generator, val)
-}
-
-// IntPow performs integer exponentiation
-func IntPow(a, b int64) int64 {
-	return int64(math.Pow(float64(a), float64(b)))
 }

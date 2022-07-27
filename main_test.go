@@ -1,19 +1,19 @@
 package main
 
 import (
+	"github.com/iammadab/snark-protocol/polynomial"
 	"testing"
 
 	"github.com/iammadab/snark-protocol/field"
 )
 
 type TestCase struct {
-	t_of_x, p_of_x, h_of_x []int64
-	is_valid               bool
+	tOfX, pOfX, hOfX []int64
+	isValid          bool
 }
 
 var testCases = []TestCase{
 	// TODO: write a simple compiler to accept polynomial in written form
-
 	// t(x) = x - 1 [-1, 1, 0, 0]
 	// p(x) = x^3 - 3x^2 + 2x [0, 2, -3, 1]
 	// h(x) = x^2 - 2x [0, -2, 1, 0]
@@ -36,28 +36,61 @@ var testCases = []TestCase{
 }
 
 // TODO: Completeness property breaks when I use larger primes e.g. 210403
-
+//			only soundness broke before
 func TestProtocol(t *testing.T) {
 	// parameters to the functions seems to have a big effect, how do we know what to pick
 	prime := int64(17707)
 	field := field.NewField(prime)
 	generator := 5
 
-	ITERATION_COUNT := 1000
+	IterationCount := 1000
 
-	for j := 0; j < ITERATION_COUNT; j++ {
+	for j := 0; j < IterationCount; j++ {
 		for i, test := range testCases {
-			verifier := NewVerifier(field, int64(generator), test.t_of_x)
+			verifier := NewVerifier(field, int64(generator), test.tOfX)
 
-			encrypted_powers_of_x := verifier.Setup()
+			encryptedPowersOfX := verifier.Setup()
 
-			prover := NewProver(field, test.p_of_x, test.h_of_x)
-			p, h := prover.Prove(encrypted_powers_of_x)
-			proofs_validity := verifier.Verify(p, h)
+			prover := NewProver(field, test.pOfX, test.hOfX)
+			p, h := prover.Prove(encryptedPowersOfX)
+			proofsValidity := verifier.Verify(p, h)
 
-			if proofs_validity != test.is_valid {
-				t.Errorf("Test: %d, expected verifier to say %t, instead got %t", i, test.is_valid, proofs_validity)
+			if proofsValidity != test.isValid {
+				t.Errorf("Test: %d, expected verifier to say %t, instead got %t", i, test.isValid, proofsValidity)
 			}
+		}
+	}
+}
+
+// TODO: Find the relationship between the field and 100% probability here
+// 		changed to f* and is passing all the time.
+func TestBreakHE(t *testing.T) {
+	prime := int64(17707)
+	field := field.NewField(prime)
+	generator := 5
+
+	IterationCount := 1000
+
+	for j := 0; j < IterationCount; j++ {
+		verifier := NewVerifier(field, int64(generator), testCases[0].tOfX)
+		encryptedPowersOfX := verifier.Setup()
+
+		// Generate fake proof that fools the verifier with 100% probability
+		randomPoint := field.RandomElement()
+		encryptedH := EncryptValue(randomPoint, int64(generator), field)
+		PolyT := polynomial.NewPolynomial(field, testCases[0].tOfX)
+		encryptedT := PolyT.EvaluateEncryptedPowers(encryptedPowersOfX)
+		encryptedP := field.Exp(encryptedT, randomPoint)
+
+		trickedVerifier := verifier.Verify(encryptedP, encryptedH)
+		if trickedVerifier != true {
+			// Print parameters in case of failure
+			println("r", randomPoint)
+			println("g^r", encryptedH)
+			println("g^t", encryptedT)
+			println("g^t^r", encryptedP)
+			println("unencrypted t", PolyT.EvaluateAt(verifier.EvalT))
+			t.Errorf("Failed to convince the verifier of a false proof")
 		}
 	}
 }

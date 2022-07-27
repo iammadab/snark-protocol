@@ -40,7 +40,7 @@ func (field *Field) Exp(a, pow int64) int64 {
 	// by finding the multiplicative inverse of the base, and converting the exponent
 	// to its positive version.
 	// a^-b => (a^-1)^b
-	// a^-1 is the multiplicative inverse of a.
+	// a^-1 is the multiplicative inverse of a
 	if pow < 0 {
 		a = field.MultiplicativeInverse(a)
 		pow *= -1
@@ -90,5 +90,5 @@ func (field *Field) MultiplicativeInverse(b int64) int64 {
 
 func (field *Field) RandomElement() int64 {
 	rand.Seed(time.Now().UnixNano())
-	return rand.Int63n(field.Order)
+	return rand.Int63n(field.Order-1) + 1
 }
