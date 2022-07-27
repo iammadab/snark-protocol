@@ -63,12 +63,14 @@ func TestProtocol(t *testing.T) {
 	}
 }
 
+// TODO: Find the relationship between the field and 100% probability here
+// 		changed to f* and is passing all the time.
 func TestBreakHE(t *testing.T) {
 	prime := int64(17707)
 	field := field.NewField(prime)
 	generator := 5
 
-	ITERATION_COUNT := 100000
+	ITERATION_COUNT := 1000000
 
 	for j := 0; j < ITERATION_COUNT; j++ {
 		verifier := NewVerifier(field, int64(generator), testCases[0].t_of_x)
