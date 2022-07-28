@@ -4,6 +4,13 @@ This is a basic implementation of the snark protocol described in this [paper](h
 
 In the paper, the protocol is described in stages, I follow the same format for my implementation.  
 
+## Setup
+```shell
+    git clone https://github.com/iammadab/snark-protocol.git
+    cd snark-protocol
+    git fetch --tags
+```
+
 ## Stages
 ### Hiding the evaluation point (homomorphic encryption)
 In order to prevent the prover from generating fake proofs, the verifier first encrypts the evaluation point and sends those encrypted powers to the prover.  
