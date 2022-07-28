@@ -35,7 +35,7 @@ This is based on the knowledge of exponent assumption.
 The verifier can still retrieve information about the polynomial p(x) (not sure how useful that information is tho).  
 The goal is to make sure the verifier learns nothing about p(x), hence the prover has to shift it's output by some hidden blinding factor while still preserving validity checks.
 
-No specific test in this case, as I don't know how to make use of the information gotten from the previous stages.
+No specific test in this case, as I don't know how to make use of the "knowledge" gotten from the previous stages.
 
 ```shell
     git checkout zero-knowledge
