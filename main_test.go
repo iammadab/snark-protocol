@@ -61,35 +61,34 @@ func TestProtocol(t *testing.T) {
 	}
 }
 
-// TODO: Find the relationship between the field and 100% probability here
-// 		changed to f* and is passing all the time.
-//func TestBreakHE(t *testing.T) {
-//	prime := int64(17707)
-//	field := field.NewField(prime)
-//	generator := 5
-//
-//	IterationCount := 1000
-//
-//	for j := 0; j < IterationCount; j++ {
-//		verifier := NewVerifier(field, int64(generator), testCases[0].tOfX)
-//		encryptedPowersOfX := verifier.Setup()
-//
-//		// Generate fake proof that fools the verifier with 100% probability
-//		randomPoint := field.RandomElement()
-//		encryptedH := EncryptValue(randomPoint, int64(generator), field)
-//		PolyT := polynomial.NewPolynomial(field, testCases[0].tOfX)
-//		encryptedT := PolyT.EvaluateEncryptedPowers(encryptedPowersOfX)
-//		encryptedP := field.Exp(encryptedT, randomPoint)
-//
-//		trickedVerifier := verifier.Verify(encryptedP, encryptedH)
-//		if trickedVerifier != true {
-//			// Print parameters in case of failure
-//			println("r", randomPoint)
-//			println("g^r", encryptedH)
-//			println("g^t", encryptedT)
-//			println("g^t^r", encryptedP)
-//			println("unencrypted t", PolyT.EvaluateAt(verifier.EvalT))
-//			t.Errorf("Failed to convince the verifier of a false proof")
-//		}
-//	}
-//}
+func TestPolynomialRestriction(t *testing.T) {
+	prime := int64(17707)
+	field := field.NewField(prime)
+	generator := 5
+
+	IterationCount := 1000
+
+	for j := 0; j < IterationCount; j++ {
+		verifier := NewVerifier(field, int64(generator), testCases[0].tOfX)
+		encryptedPowersOfX, shiftedPowersOfX := verifier.Setup()
+
+		prover := NewProver(field, testCases[0].pOfX, testCases[0].hOfX)
+		p, shiftedP, h := prover.Prove(encryptedPowersOfX, shiftedPowersOfX)
+
+		// show that verifier accepts with correct inputs
+		proofIsValid := verifier.Verify(p, shiftedP, h)
+		if proofIsValid != true {
+			// verifier didn't accept, this should not happen
+			t.Errorf("Verifier failed to accept a valid proof, completeness is broken")
+		}
+
+		// TODO: possible that random element might be same as final value
+		// set shiftedP to some arbitrary value
+		shiftedP = field.RandomElement()
+		proofIsValid = verifier.Verify(p, shiftedP, h)
+		if proofIsValid == true {
+			// verifier accepted a false proof, this should not happen
+			t.Errorf("Verifier accept a false proof, soundness is broken")
+		}
+	}
+}
