@@ -88,6 +88,7 @@ func (field *Field) MultiplicativeInverse(b int64) int64 {
 	return ta[0]
 }
 
+// TODO: I changed this to f*, is this right??
 func (field *Field) RandomElement() int64 {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Int63n(field.Order-1) + 1

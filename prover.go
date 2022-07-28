@@ -17,8 +17,9 @@ func NewProver(field *field.Field, polyp []int64, polyh []int64) *Prover {
 	}
 }
 
-func (prover *Prover) Prove(powers []int64) (int64, int64) {
+func (prover *Prover) Prove(powers []int64, shiftedPowers []int64) (int64, int64, int64) {
 	encryptedEvaluationOfP := prover.PolyP.EvaluateEncryptedPowers(powers)
+	shiftedEvaluationOfP := prover.PolyP.EvaluateEncryptedPowers(shiftedPowers)
 	encryptedEvaluationOfH := prover.PolyH.EvaluateEncryptedPowers(powers)
-	return encryptedEvaluationOfP, encryptedEvaluationOfH
+	return encryptedEvaluationOfP, shiftedEvaluationOfP, encryptedEvaluationOfH
 }
