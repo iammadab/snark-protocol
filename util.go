@@ -15,6 +15,15 @@ func GenerateEncryptedPowers(point int64, degree int, generator int64, field *fi
 	return encryptedPowers
 }
 
+func ShiftEncryptedPowers(encryptedPowers []int64, shift int64, field *field.Field) []int64 {
+	var shiftedPowers []int64
+	for i := 0; i < len(encryptedPowers); i++ {
+		shiftedPower := field.Exp(encryptedPowers[i], shift)
+		shiftedPowers = append(shiftedPowers, shiftedPower)
+	}
+	return shiftedPowers
+}
+
 func EncryptValue(point int64, generator int64, field *field.Field) int64 {
 	return field.Exp(generator, point)
 }
