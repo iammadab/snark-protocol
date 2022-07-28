@@ -19,4 +19,17 @@ Then test the function that breaks the protocol with:
     go test --run TestBreakHE
 ```
 
+### Polynomial Restriction
+
+To prevent the attack from the last stage, we need to be able to detect when the verifier uses variable powers different from what the verifier provides.
+This is based on the knowledge of exponent assumption.
+
+```shell
+    git checkout polynomial-restriction
+```
+
+```shell
+    go test --run TestPolynomialRestriction
+```
+
 (other stages) TBD
